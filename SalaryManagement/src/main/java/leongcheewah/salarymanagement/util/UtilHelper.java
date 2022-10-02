@@ -8,15 +8,15 @@ import leongcheewah.salarymanagement.model.EmployeeVO;
 
 public class UtilHelper {
 
-	public static EmployeeVO mapEmployeeBeanToVO(Employee employeeBean) {
+	public static EmployeeVO mapEmployeeToVO(Employee employeeBean) {
 		return new EmployeeVO(employeeBean.getId(), employeeBean.getLogin(), employeeBean.getName(),
 				employeeBean.getSalary());
 	}
 
-	public static List<EmployeeVO> mapEmployeeBeanListToVOList(List<Employee> employeeBeanList) {
+	public static List<EmployeeVO> mapEmployeeListToVOList(List<Employee> employeeBeanList) {
 		List<EmployeeVO> returnEmployeeList = new ArrayList<EmployeeVO>();
 		for (Employee bean : employeeBeanList) {
-			returnEmployeeList.add(mapEmployeeBeanToVO(bean));
+			returnEmployeeList.add(mapEmployeeToVO(bean));
 
 		}
 		return returnEmployeeList;

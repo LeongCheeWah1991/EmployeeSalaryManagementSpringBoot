@@ -2,16 +2,29 @@ package leongcheewah.salarymanagement.model;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import leongcheewah.salarymanagement.util.ResponseMessageConstants;
+
 public class EmployeeVO implements Serializable {
 
 	private static final long serialVersionUID = 7044531438893359172L;
 
+	@NotEmpty(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_ID)
+	@NotNull(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_ID)
 	private String id;
 	
+	@NotEmpty(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_LOGIN)
+	@NotNull(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_LOGIN)
 	private String login;
 	
+	@NotEmpty(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_NAME)
+	@NotNull(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_NAME)
 	private String name;
 	
+	@Min(value = 0, message = ResponseMessageConstants.BAD_INPUT_ERROR + ResponseMessageConstants.EMPLOYEE_SALARY)
 	private Double salary;
 
 	public EmployeeVO() {
