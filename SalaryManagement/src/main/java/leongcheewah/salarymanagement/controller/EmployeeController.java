@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import leongcheewah.salarymanagement.model.EmployeeSearchParamsVO;
 import leongcheewah.salarymanagement.model.EmployeeVO;
@@ -28,6 +29,20 @@ public class EmployeeController {
 
 	@Autowired
 	private EmployeeService employeeSvc;
+	
+	@PostMapping(path = "/upload", consumes = "multipart/form-data", produces = "application/json")
+	public ResponseEntity<Object> uploadEmployees(@RequestParam("file") MultipartFile file) {
+		ResponseVO returnObj = employeeSvc.uploadEmployees(file);
+
+		Map<String, Object> returnMsgObj = new HashMap<String, Object>();
+		returnMsgObj.put("message", returnObj.getMsg());
+
+		if (returnObj.isSuccess()) {
+			return ResponseEntity.status(HttpStatus.OK).body(returnMsgObj);
+		} else {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnMsgObj);
+		}
+	}
 	
 	@GetMapping(path = "/", produces = "application/json")
 	public ResponseEntity<Object> searchEmployees(

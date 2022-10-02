@@ -73,7 +73,7 @@ public class EmployeeVO implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Employee [id=" + id + ", login=" + login + ", name=" + name + ", salary=" + salary + "]";
+		return "EmployeeVO [id=" + id + ", login=" + login + ", name=" + name + ", salary=" + salary + "]";
 	}
 
 }

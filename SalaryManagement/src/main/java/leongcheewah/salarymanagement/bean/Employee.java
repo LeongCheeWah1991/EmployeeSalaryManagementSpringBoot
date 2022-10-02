@@ -9,9 +9,6 @@ import javax.persistence.Id;
 @Entity
 public class Employee implements Serializable{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	
 	@Id
@@ -73,7 +70,7 @@ public class Employee implements Serializable{
 
 	@Override
 	public String toString() {
-		return "EmployeeBean [id=" + id + ", login=" + login + ", name=" + name + ", salary=" + salary + "]";
+		return "Employee [id=" + id + ", login=" + login + ", name=" + name + ", salary=" + salary + "]";
 	}
 
 }

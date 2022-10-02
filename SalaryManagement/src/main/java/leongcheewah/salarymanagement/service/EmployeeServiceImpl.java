@@ -8,17 +8,20 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import leongcheewah.salarymanagement.bean.Employee;
 import leongcheewah.salarymanagement.model.EmployeeSearchParamsVO;
 import leongcheewah.salarymanagement.model.EmployeeVO;
 import leongcheewah.salarymanagement.model.ResponseVO;
 import leongcheewah.salarymanagement.repository.EmployeeRepository;
+import leongcheewah.salarymanagement.util.CSVUtil;
 import leongcheewah.salarymanagement.util.ResponseMessageConstants;
 import leongcheewah.salarymanagement.util.UtilHelper;
 
@@ -30,6 +33,112 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	private EmployeeRepository employeeRepository;
+
+	public ResponseVO uploadEmployees(MultipartFile file) {
+
+		try {
+			if (!CSVUtil.validateCSVFileFormat(file)) {
+				return new ResponseVO(false,
+						ResponseMessageConstants.UPLOAD_ERROR + ResponseMessageConstants.CSV_FILE_FORMAT_NOT_MATCH);
+			}
+
+			if (file.isEmpty()) {
+				return new ResponseVO(false,
+						ResponseMessageConstants.UPLOAD_ERROR + ResponseMessageConstants.CSV_FILE_IS_EMPTY);
+			}
+
+			List<String> csvIdList = new ArrayList<String>();
+			List<String> csvLoginList = new ArrayList<String>();
+
+			List<Employee> employeeList = new ArrayList<Employee>();
+			List<CSVRecord> csvRecords = CSVUtil.parseCsv(file);
+			for (CSVRecord csvRecord : csvRecords) {
+				String employeeId = csvRecord.get("id");
+
+				if (employeeId.startsWith("#")) {
+					continue;
+				}
+
+				if (csvIdList.contains(employeeId)) {
+					return new ResponseVO(false, ResponseMessageConstants.UPLOAD_ERROR
+							+ ResponseMessageConstants.DUPLICATE + " " + ResponseMessageConstants.EMPLOYEE_ID);
+				}
+
+				String employeeLogin = csvRecord.get("login");
+
+				if (csvLoginList.contains(employeeLogin)) {
+					return new ResponseVO(false, ResponseMessageConstants.UPLOAD_ERROR
+							+ ResponseMessageConstants.DUPLICATE + " " + ResponseMessageConstants.EMPLOYEE_LOGIN);
+				}
+
+				String employeeName = csvRecord.get("name");
+				String salaryStr = csvRecord.get("salary");
+
+				double salary = 0;
+				try {
+					salary = Double.parseDouble(salaryStr);
+				} catch (Exception ex) {
+					return new ResponseVO(false,
+							ResponseMessageConstants.BAD_INPUT_ERROR + ResponseMessageConstants.EMPLOYEE_SALARY);
+				}
+
+				EmployeeVO employeeData = new EmployeeVO(employeeId, employeeLogin, employeeName, salary);
+				String violationMsg = validateEmployeeVO(employeeData);
+
+				if (null != violationMsg) {
+					return new ResponseVO(false, violationMsg);
+				}
+
+				Employee employee = new Employee(employeeId, employeeLogin, employeeName, salary);
+
+				employeeList.add(employee);
+				csvIdList.add(employeeData.getId());
+				csvLoginList.add(employeeData.getLogin());
+			}
+
+			List<Employee> employeeListForCreate = new ArrayList<Employee>();
+			List<Employee> employeeListForUpdate = new ArrayList<Employee>();
+
+			for (Employee employee : employeeList) {
+				String employeeId = employee.getId();
+				Employee existingEmployee = getEmployeeById(employeeId);
+
+				if (null == existingEmployee) {
+					String validateResult = validateEmployeeIdAndLoginForInsert(employee.getId(), employee.getLogin());
+					if (null != validateResult) {
+						return new ResponseVO(false, validateResult);
+					}
+					employeeListForCreate.add(employee);
+				} else {
+
+					if (!existingEmployee.equals(employee)) {
+						String login = employee.getLogin();
+						if (!existingEmployee.getLogin().equals(login)) {
+							if (!isEmployeeLoginUnique(login)) {
+								return new ResponseVO(false,
+										ResponseMessageConstants.DATA_ERROR_EMPLOYEE_LOGIN_NOT_UNIQUE);
+							}
+						}
+
+						employeeListForUpdate.add(employee);
+					}
+				}
+			}
+
+			if (null != employeeListForCreate && !employeeListForCreate.isEmpty()) {
+				employeeRepository.saveAll(employeeListForCreate);
+			}
+
+			if (null != employeeListForUpdate && !employeeListForUpdate.isEmpty()) {
+				employeeRepository.saveAll(employeeListForUpdate);
+			}
+		} catch (Exception ex) {
+			return new ResponseVO(false, ResponseMessageConstants.UPLOAD_ERROR);
+		}
+
+		return new ResponseVO(true, ResponseMessageConstants.SUCCESS_UPLOAD);
+
+	}
 
 	@Override
 	public List<EmployeeVO> getEmployees() {
@@ -77,18 +186,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (null == sort || sort.isEmpty()) {
 			sort = "+id";
 		}
-		System.out.println("sort " + sort);
-
 		Direction sortDirection = null;
 		char sortSymbol = sort.charAt(0);
-		System.out.println("sortSymbol " + sortSymbol);
 		if ('+' == sortSymbol) {
 			sortDirection = Direction.ASC;
-			System.out.println("asc");
-
 		} else {
-			System.out.println("desc");
-
 			sortDirection = Direction.DESC;
 		}
 
@@ -115,8 +217,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 				sortParameter = "id";
 			}
 		}
-		System.out.println("sortParameter " + sortParameter);
-
 		Page<Employee> pageEmployees = null;
 
 		if (hasSearch) {
@@ -191,11 +291,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (null != validateResult) {
 			return new ResponseVO(false, validateResult);
 		}
-		Employee Employee = UtilHelper.mapEmployeeVOToEmployee(employeeData);
 
 		try {
-
-			employeeRepository.save(Employee);
+			Employee createEmployee = new Employee(id, login, employeeData.getName(), employeeData.getSalary());
+			employeeRepository.save(createEmployee);
 
 		} catch (Exception ex) {
 			return new ResponseVO(false, ResponseMessageConstants.ERROR_CREATE);
