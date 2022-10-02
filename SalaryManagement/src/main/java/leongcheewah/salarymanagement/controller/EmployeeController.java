@@ -22,6 +22,8 @@ import leongcheewah.salarymanagement.model.EmployeeSearchParamsVO;
 import leongcheewah.salarymanagement.model.EmployeeVO;
 import leongcheewah.salarymanagement.model.ResponseVO;
 import leongcheewah.salarymanagement.service.EmployeeService;
+import leongcheewah.salarymanagement.service.UploadService;
+import leongcheewah.salarymanagement.util.ResponseMessageConstants;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -29,28 +31,46 @@ public class EmployeeController {
 
 	@Autowired
 	private EmployeeService employeeSvc;
-	
+
+	@Autowired
+	private UploadService uploadSvc;
+
 	@PostMapping(path = "/upload", consumes = "multipart/form-data", produces = "application/json")
 	public ResponseEntity<Object> uploadEmployees(@RequestParam("file") MultipartFile file) {
-		ResponseVO returnObj = employeeSvc.uploadEmployees(file);
+
+		ResponseVO returnObj = null;
 
 		Map<String, Object> returnMsgObj = new HashMap<String, Object>();
-		returnMsgObj.put("message", returnObj.getMsg());
 
-		if (returnObj.isSuccess()) {
-			return ResponseEntity.status(HttpStatus.OK).body(returnMsgObj);
-		} else {
+		if (uploadSvc.getUploadStatus()) {
+			// ongoing upload, return msg and uploadStatus
+			returnMsgObj.put("message", ResponseMessageConstants.UPLOAD_ERROR + ResponseMessageConstants.ONGOING_UPLOAD);
+			returnMsgObj.put("uploadStatus", false);
+
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnMsgObj);
+		} else {
+			// means no ongoing upload, continue
+
+			// set to ongoing
+			uploadSvc.setUploadStatus(true);
+
+			returnObj = employeeSvc.uploadEmployees(file);
+			returnMsgObj.put("message", returnObj.getMsg());
+
+			uploadSvc.setUploadStatus(false);
+
+			if (returnObj.isSuccess()) {
+				return ResponseEntity.status(HttpStatus.OK).body(returnMsgObj);
+			} else {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnMsgObj);
+			}
 		}
 	}
-	
+
 	@GetMapping(path = "/", produces = "application/json")
-	public ResponseEntity<Object> searchEmployees(
-			@RequestParam (required=false) Double minSalary, 
-			@RequestParam (required=false) Double maxSalary,
-			@RequestParam (required=false) Integer offset, 
-			@RequestParam (required=false) Integer limit, 
-			@RequestParam (required=false) String sort) {
+	public ResponseEntity<Object> searchEmployees(@RequestParam(required = false) Double minSalary,
+			@RequestParam(required = false) Double maxSalary, @RequestParam(required = false) Integer offset,
+			@RequestParam(required = false) Integer limit, @RequestParam(required = false) String sort) {
 
 		EmployeeSearchParamsVO searchParams = new EmployeeSearchParamsVO();
 		searchParams.setMinSalary(minSalary);
@@ -58,7 +78,7 @@ public class EmployeeController {
 		searchParams.setOffset(offset);
 		searchParams.setLimit(limit);
 		searchParams.setSort(sort);
-		
+
 		ResponseVO returnObj = employeeSvc.searchEmployees(searchParams);
 
 		Map<String, Object> returnMsgObj = new HashMap<String, Object>();
@@ -71,7 +91,7 @@ public class EmployeeController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnMsgObj);
 		}
 	}
-	
+
 	@GetMapping(path = "/getall", produces = "application/json")
 	public ResponseEntity<Object> getAllEmployees() {
 
@@ -79,19 +99,19 @@ public class EmployeeController {
 
 		return ResponseEntity.status(HttpStatus.OK).body(employees);
 	}
-	
+
 	@GetMapping(path = "/{id}", produces = "application/json")
 	public ResponseEntity<Object> getEmployeeById(@PathVariable String id) {
 
 		ResponseVO returnObj = employeeSvc.getEmployeeByEmpId(id);
-		
+
 		if (returnObj.isSuccess()) {
 			return ResponseEntity.status(HttpStatus.OK).body(returnObj.getResultObj());
 		} else {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnObj.getMsg());
 		}
 	}
-	
+
 	@PostMapping(path = "/", produces = "application/json")
 	public ResponseEntity<Object> insertEmployee(@RequestBody EmployeeVO employeeData) {
 
@@ -106,7 +126,7 @@ public class EmployeeController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(returnMsgObj);
 		}
 	}
-	
+
 	@PatchMapping(path = "/{id}", produces = "application/json")
 	public ResponseEntity<Object> updateEmployee(@PathVariable String id, @RequestBody EmployeeVO employeeData) {
 

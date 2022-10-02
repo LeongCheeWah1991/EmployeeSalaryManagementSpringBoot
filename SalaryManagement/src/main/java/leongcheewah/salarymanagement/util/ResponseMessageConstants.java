@@ -17,6 +17,7 @@ public class ResponseMessageConstants {
 	public static final String BAD_INPUT_ERROR = "Invalid ";
 	public static final String MISSING_ERROR = "Missing ";
 	public static final String DUPLICATE = "Duplicate ";
+	public static final String ONGOING_UPLOAD = "Ongoing Upload";
 
 	public static final String UPLOAD_ERROR = "Upload Failed - ";
 	public static final String CSV_FILE_FORMAT_NOT_MATCH = "Invalid CSV file";
