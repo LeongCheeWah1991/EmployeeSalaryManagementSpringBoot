@@ -1,5 +1,9 @@
 package leongcheewah.salarymanagement.repository;
 
-public interface EmployeeRepository {
+import org.springframework.data.repository.CrudRepository;
+
+import leongcheewah.salarymanagement.bean.Employee;
+
+public interface EmployeeRepository extends CrudRepository<Employee, String>{
 
 }
