@@ -18,5 +18,17 @@ public class ResponseMessageConstants {
 	public static final String MISSING_ERROR = "Missing ";
 	public static final String DUPLICATE = "Duplicate ";
 
+	public static final String SUCCESS_CREATE = "Successfully created";
+	public static final String SUCCESS_UPDATE = "Successfully updated";
+	public static final String SUCCESS_DELETE = "Successfully deleted";
+	
+	public static final String ERROR_CREATE = "Error trying to create";
+	public static final String ERROR_UPDATE = "Error trying to update";
+	public static final String ERROR_DELETE = "Error trying to delete";
+
+	public static final String DATA_ERROR_EMPLOYEE_NO_SUCH_EMPLOYEE = "No such employee";
+	public static final String DATA_ERROR_EMPLOYEE_ID_EXISTS = "Employee ID already exists";
+	public static final String DATA_ERROR_EMPLOYEE_LOGIN_NOT_UNIQUE = "Employee login not unique";
+	public static final String DATA_ERROR_FAILED_TO_RETRIEVE = "Failed to retrieve employee";
 
 }

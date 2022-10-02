@@ -2,6 +2,7 @@ package leongcheewah.salarymanagement.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
@@ -18,6 +19,7 @@ import leongcheewah.salarymanagement.model.EmployeeSearchParamsVO;
 import leongcheewah.salarymanagement.model.EmployeeVO;
 import leongcheewah.salarymanagement.model.ResponseVO;
 import leongcheewah.salarymanagement.repository.EmployeeRepository;
+import leongcheewah.salarymanagement.util.ResponseMessageConstants;
 import leongcheewah.salarymanagement.util.UtilHelper;
 
 @Service
@@ -25,10 +27,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Autowired
 	private Validator validator;
-	
+
 	@Autowired
 	private EmployeeRepository employeeRepository;
-	
+
 	@Override
 	public List<EmployeeVO> getEmployees() {
 
@@ -36,7 +38,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		List<EmployeeVO> returnEmployeeList = UtilHelper.mapEmployeeListToVOList(EmployeeList);
 		return returnEmployeeList;
 	}
-	
+
 	@Override
 	public ResponseVO searchEmployees(EmployeeSearchParamsVO searchParams) {
 
@@ -65,7 +67,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (maxSalary != 0) {
 			hasSearch = true;
 		}
-	
+
 		// if no limit specified, retrieve by default value of 30
 		if (limit == 0) {
 			limit = 30;
@@ -140,5 +142,164 @@ public class EmployeeServiceImpl implements EmployeeService {
 		ResponseVO returnResponse = new ResponseVO(true, returnEmployeeList);
 
 		return returnResponse;
+	}
+
+	@Override
+	public ResponseVO getEmployeeByEmpId(String empId) {
+
+		Optional<Employee> optionalEmployee = employeeRepository.findById(empId);
+
+		EmployeeVO returnEmployee = null;
+
+		try {
+			if (!optionalEmployee.isEmpty()) {
+				returnEmployee = UtilHelper.mapEmployeeToVO(optionalEmployee.get());
+			} else {
+				return new ResponseVO(false, ResponseMessageConstants.DATA_ERROR_EMPLOYEE_NO_SUCH_EMPLOYEE);
+			}
+		} catch (Exception ex) {
+			return new ResponseVO(false, ResponseMessageConstants.DATA_ERROR_FAILED_TO_RETRIEVE);
+
+		}
+		return new ResponseVO(true, returnEmployee);
+	}
+
+	public Employee getEmployeeById(String id) {
+
+		Optional<Employee> optionalEmployee = employeeRepository.findById(id);
+
+		if (!optionalEmployee.isEmpty()) {
+			return optionalEmployee.get();
+		} else {
+			return null;
+		}
+	}
+
+	@Override
+	public ResponseVO insertEmployee(EmployeeVO employeeData) {
+
+		String violationMsg = validateEmployeeVO(employeeData);
+		if (null != violationMsg) {
+			return new ResponseVO(false, violationMsg);
+		}
+
+		String id = employeeData.getId();
+		String login = employeeData.getLogin();
+
+		String validateResult = validateEmployeeIdAndLoginForInsert(id, login);
+
+		if (null != validateResult) {
+			return new ResponseVO(false, validateResult);
+		}
+		Employee Employee = UtilHelper.mapEmployeeVOToEmployee(employeeData);
+
+		try {
+
+			employeeRepository.save(Employee);
+
+		} catch (Exception ex) {
+			return new ResponseVO(false, ResponseMessageConstants.ERROR_CREATE);
+		}
+
+		return new ResponseVO(true, ResponseMessageConstants.SUCCESS_CREATE);
+	}
+
+	@Override
+	public ResponseVO updateEmployee(String id, EmployeeVO employeeData) {
+
+		Employee existingEmployee = getEmployeeById(id);
+
+		if (null == existingEmployee) {
+			return new ResponseVO(false, ResponseMessageConstants.DATA_ERROR_EMPLOYEE_NO_SUCH_EMPLOYEE);
+		}
+
+		String violationMsg = validateEmployeeVO(employeeData);
+		if (null != violationMsg) {
+			return new ResponseVO(false, violationMsg);
+		}
+
+		try {
+
+			String login = employeeData.getLogin();
+			if (!existingEmployee.getLogin().equals(login)) {
+				if (!isEmployeeLoginUnique(login)) {
+					return new ResponseVO(false, ResponseMessageConstants.DATA_ERROR_EMPLOYEE_LOGIN_NOT_UNIQUE);
+				}
+				existingEmployee.setLogin(login);
+			}
+
+			existingEmployee.setName(employeeData.getName());
+			existingEmployee.setSalary(employeeData.getSalary());
+
+			employeeRepository.save(existingEmployee);
+
+		} catch (Exception ex) {
+			return new ResponseVO(false, ResponseMessageConstants.ERROR_UPDATE);
+		}
+
+		return new ResponseVO(true, ResponseMessageConstants.SUCCESS_UPDATE);
+	}
+
+	@Override
+	public ResponseVO deleteEmployee(String id) {
+
+		Employee existingEmployee = getEmployeeById(id);
+
+		if (null == existingEmployee) {
+			return new ResponseVO(false, ResponseMessageConstants.DATA_ERROR_EMPLOYEE_NO_SUCH_EMPLOYEE);
+		}
+
+		try {
+			employeeRepository.delete(existingEmployee);
+
+		} catch (Exception ex) {
+			return new ResponseVO(false, ResponseMessageConstants.ERROR_DELETE);
+		}
+
+		return new ResponseVO(true, ResponseMessageConstants.SUCCESS_DELETE);
+	}
+
+	public String validateEmployeeVO(EmployeeVO employeeData) {
+		String violationMsg = null;
+
+		Set<ConstraintViolation<EmployeeVO>> violations = validator.validate(employeeData);
+
+		if (!violations.isEmpty()) {
+			for (ConstraintViolation<EmployeeVO> violation : violations) {
+				violationMsg = violation.getMessage();
+			}
+		}
+		return violationMsg;
+	}
+
+	public boolean isEmployeeIdUnique(String id) {
+		Optional<Employee> checkEmployeeExists = employeeRepository.findById(id);
+
+		if (!checkEmployeeExists.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+
+	public boolean isEmployeeLoginUnique(String login) {
+		Optional<Employee> checkEmployeeExists = employeeRepository.findByLogin(login);
+
+		if (!checkEmployeeExists.isEmpty()) {
+			return false;
+		}
+		return true;
+	}
+
+	public String validateEmployeeIdAndLoginForInsert(String id, String login) {
+
+		if (!isEmployeeIdUnique(id)) {
+			return ResponseMessageConstants.DATA_ERROR_EMPLOYEE_ID_EXISTS;
+		}
+
+		if (!isEmployeeLoginUnique(login)) {
+			return ResponseMessageConstants.DATA_ERROR_EMPLOYEE_LOGIN_NOT_UNIQUE;
+		}
+
+		return null;
 	}
 }
