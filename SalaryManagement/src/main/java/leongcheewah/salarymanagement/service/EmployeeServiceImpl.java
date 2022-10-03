@@ -37,6 +37,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public ResponseVO uploadEmployees(MultipartFile file) {
 
 		try {
+
 			if (!CSVUtil.validateCSVFileFormat(file)) {
 				return new ResponseVO(false,
 						ResponseMessageConstants.UPLOAD_ERROR + ResponseMessageConstants.CSV_FILE_FORMAT_NOT_MATCH);
@@ -47,12 +48,24 @@ public class EmployeeServiceImpl implements EmployeeService {
 						ResponseMessageConstants.UPLOAD_ERROR + ResponseMessageConstants.CSV_FILE_IS_EMPTY);
 			}
 
+			if (!CSVUtil.validateCsvHeaders(file)) {
+				return new ResponseVO(false, ResponseMessageConstants.UPLOAD_ERROR
+						+ ResponseMessageConstants.CSV_HEADERS_DONT_MATCH_EXPECTED);
+			}
+
+			List<CSVRecord> csvRecords = CSVUtil.parseCsv(file);
+			if (csvRecords == null || csvRecords.isEmpty()) {
+				return new ResponseVO(false,
+						ResponseMessageConstants.UPLOAD_ERROR + ResponseMessageConstants.CSV_FILE_IS_EMPTY);
+			}
+
 			List<String> csvIdList = new ArrayList<String>();
 			List<String> csvLoginList = new ArrayList<String>();
-
 			List<Employee> employeeList = new ArrayList<Employee>();
-			List<CSVRecord> csvRecords = CSVUtil.parseCsv(file);
+
+			int recordNo = 1;
 			for (CSVRecord csvRecord : csvRecords) {
+				recordNo++;
 				String employeeId = csvRecord.get("id");
 
 				if (employeeId.startsWith("#")) {
@@ -60,15 +73,17 @@ public class EmployeeServiceImpl implements EmployeeService {
 				}
 
 				if (csvIdList.contains(employeeId)) {
-					return new ResponseVO(false, ResponseMessageConstants.UPLOAD_ERROR
-							+ ResponseMessageConstants.DUPLICATE + " " + ResponseMessageConstants.EMPLOYEE_ID);
+					return new ResponseVO(false,
+							ResponseMessageConstants.UPLOAD_ERROR + ResponseMessageConstants.DUPLICATE + " "
+									+ ResponseMessageConstants.EMPLOYEE_ID + " at Row: " + recordNo);
 				}
 
 				String employeeLogin = csvRecord.get("login");
 
 				if (csvLoginList.contains(employeeLogin)) {
-					return new ResponseVO(false, ResponseMessageConstants.UPLOAD_ERROR
-							+ ResponseMessageConstants.DUPLICATE + " " + ResponseMessageConstants.EMPLOYEE_LOGIN);
+					return new ResponseVO(false,
+							ResponseMessageConstants.UPLOAD_ERROR + ResponseMessageConstants.DUPLICATE + " "
+									+ ResponseMessageConstants.EMPLOYEE_LOGIN + " at Row: " + recordNo);
 				}
 
 				String employeeName = csvRecord.get("name");
@@ -78,8 +93,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 				try {
 					salary = Double.parseDouble(salaryStr);
 				} catch (Exception ex) {
-					return new ResponseVO(false,
-							ResponseMessageConstants.BAD_INPUT_ERROR + ResponseMessageConstants.EMPLOYEE_SALARY);
+					return new ResponseVO(false, ResponseMessageConstants.BAD_INPUT_ERROR
+							+ ResponseMessageConstants.EMPLOYEE_SALARY + " at Row: " + recordNo);
 				}
 
 				EmployeeVO employeeData = new EmployeeVO(employeeId, employeeLogin, employeeName, salary);

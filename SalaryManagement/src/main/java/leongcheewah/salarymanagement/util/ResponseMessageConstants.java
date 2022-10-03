@@ -21,7 +21,8 @@ public class ResponseMessageConstants {
 
 	public static final String UPLOAD_ERROR = "Upload Failed - ";
 	public static final String CSV_FILE_FORMAT_NOT_MATCH = "Invalid CSV file";
-	public static final String CSV_FILE_IS_EMPTY = "Empty CSV file";
+	public static final String CSV_FILE_IS_EMPTY = "Empty CSV file / No Records";
+	public static final String CSV_HEADERS_DONT_MATCH_EXPECTED = "CSV headers does not match. Expected: [id, login, name, salary]";
 
 	public static final String SUCCESS_UPLOAD = "Successfully uploaded";
 

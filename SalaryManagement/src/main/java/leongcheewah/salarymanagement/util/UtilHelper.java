@@ -21,7 +21,7 @@ public class UtilHelper {
 		}
 		return returnEmployeeList;
 	}
-	
+
 	public static Employee mapEmployeeVOToEmployee(EmployeeVO employee) {
 		return new Employee(employee.getId(), employee.getLogin(), employee.getName(), employee.getSalary());
 	}

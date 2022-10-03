@@ -2,6 +2,7 @@ package leongcheewah.salarymanagement.model;
 
 import java.io.Serializable;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -24,7 +25,10 @@ public class EmployeeVO implements Serializable {
 	@NotNull(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_NAME)
 	private String name;
 	
+
+	@Digits(fraction = 2, integer = Integer.MAX_VALUE, message = ResponseMessageConstants.BAD_INPUT_ERROR + ResponseMessageConstants.EMPLOYEE_SALARY)
 	@Min(value = 0, message = ResponseMessageConstants.BAD_INPUT_ERROR + ResponseMessageConstants.EMPLOYEE_SALARY)
+	@NotNull(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_SALARY)
 	private Double salary;
 
 	public EmployeeVO() {
