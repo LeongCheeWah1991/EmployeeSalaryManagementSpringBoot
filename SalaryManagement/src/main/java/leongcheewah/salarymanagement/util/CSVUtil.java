@@ -29,12 +29,16 @@ public class CSVUtil {
 			BufferedReader fileReader = new BufferedReader(new InputStreamReader(file.getInputStream(), "UTF-8"));
 			CSVParser csvParser = new CSVParser(fileReader,
 					CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
-			
+
 			List<String> csvHeaders = csvParser.getHeaderNames();
 			csvParser.close();
 
-			for(String expectedHeader: CSV_FILE_HEADERS) {
-				if(!csvHeaders.contains(expectedHeader)) {
+			if (CSV_FILE_HEADERS.size() != csvHeaders.size()) {
+				return false;
+			}
+
+			for (String expectedHeader : CSV_FILE_HEADERS) {
+				if (!csvHeaders.contains(expectedHeader)) {
 					return false;
 				}
 			}

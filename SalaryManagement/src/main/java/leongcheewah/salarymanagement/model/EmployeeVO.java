@@ -1,34 +1,34 @@
 package leongcheewah.salarymanagement.model;
 
-import java.io.Serializable;
-
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import leongcheewah.salarymanagement.util.ResponseMessageConstants;
 
-public class EmployeeVO implements Serializable {
+public class EmployeeVO {
 
-	private static final long serialVersionUID = 7044531438893359172L;
-
-	@NotEmpty(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_ID)
-	@NotNull(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_ID)
+	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = ResponseMessageConstants.BAD_INPUT_ERROR + ResponseMessageConstants.EMPLOYEE_ID)
+	@NotEmpty(message = ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_ID)
+	@NotNull(message = ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_ID)
 	private String id;
-	
-	@NotEmpty(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_LOGIN)
-	@NotNull(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_LOGIN)
-	private String login;
-	
-	@NotEmpty(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_NAME)
-	@NotNull(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_NAME)
-	private String name;
-	
 
-	@Digits(fraction = 2, integer = Integer.MAX_VALUE, message = ResponseMessageConstants.BAD_INPUT_ERROR + ResponseMessageConstants.EMPLOYEE_SALARY)
+	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = ResponseMessageConstants.BAD_INPUT_ERROR + ResponseMessageConstants.EMPLOYEE_LOGIN)
+	@NotEmpty(message = ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_LOGIN)
+	@NotNull(message = ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_LOGIN)
+	private String login;
+
+	@Pattern(regexp = "^[a-zA-Z0-9 ]*$", message = ResponseMessageConstants.BAD_INPUT_ERROR + ResponseMessageConstants.EMPLOYEE_NAME)
+	@NotEmpty(message = ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_NAME)
+	@NotNull(message = ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_NAME)
+	private String name;
+
+	@Digits(fraction = 2, integer = Integer.MAX_VALUE, message = ResponseMessageConstants.BAD_INPUT_ERROR
+			+ ResponseMessageConstants.EMPLOYEE_SALARY)
 	@Min(value = 0, message = ResponseMessageConstants.BAD_INPUT_ERROR + ResponseMessageConstants.EMPLOYEE_SALARY)
-	@NotNull(message=ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_SALARY)
+	@NotNull(message = ResponseMessageConstants.MISSING_ERROR + ResponseMessageConstants.EMPLOYEE_SALARY)
 	private Double salary;
 
 	public EmployeeVO() {
