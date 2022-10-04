@@ -1,5 +1,5 @@
 ---------------------------------------------------------------------------
-Title: Leong Chee Wah Employee Salary Management Assignment
+Leong Chee Wah Employee Salary Management Assignment
 ---------------------------------------------------------------------------
 
 This is the Backend component for the assignment. For the Frontend component, please refer to the Frontend Repo as follows:
