@@ -35,25 +35,25 @@ Design:
 Project structure:
 Controller (endpoints) > Service (business logics) > Repository (data access)
 
-EmployeeController: Class for service endpoints and return respective responses
-EmployeeService: Interface for EmployeeService with methods definition
-EmployeeServiceImpl: Implements EmployeeService, handling business logics
-EmployeeRepository: extends CrudRepository for common crud methods and contains custom retrieval methods
-ResponseMessageConstants: contains constant variables used for formulating response messages
-CSVUtil: Util class for handling reading of CSV records
-Employee: Bean class for Employee
-EmployeeSearchParamsVO: VO class for EmployeeSearchParams
-EmployeeVO: VO class for Employee (Receive/Return data from FrontEnd)
-ResponseVO: VO class for returning Backend Responses to Frontend
+- EmployeeController: Class for service endpoints and return respective responses
+- EmployeeService: Interface for EmployeeService with methods definition
+- EmployeeServiceImpl: Implements EmployeeService, handling business logics
+- EmployeeRepository: extends CrudRepository for common crud methods and contains custom retrieval methods
+- ResponseMessageConstants: contains constant variables used for formulating response messages
+- CSVUtil: Util class for handling reading of CSV records
+- Employee: Bean class for Employee
+- EmployeeSearchParamsVO: VO class for EmployeeSearchParams
+- EmployeeVO: VO class for Employee (Receive/Return data from FrontEnd)
+- ResponseVO: VO class for returning Backend Responses to Frontend
 
 Database: 
 H2 Database Engine
 
 Database Schema:
-id 	- Primary Key, String, stores Employee Id
-login 	- String, stores Employee Login
-name 	- String, stores Employee Name
-salary 	- double, stores Employee Salary
+- id 	- Primary Key, String, stores Employee Id
+- login 	- String, stores Employee Login
+- name 	- String, stores Employee Name
+- salary 	- double, stores Employee Salary
 
 employeeSchema.sql
 
@@ -85,7 +85,7 @@ Testing the application: (Using Postman)
 ---------------------------------------------------------------------------
 JUnit Test classes
 ---------------------------------------------------------------------------
-EmployeeControllerTest: Contains tests methods to test EmployeeController endpoints
-EmployeeServiceTest: Contains test methods to test EmployeeService methods and logics
 Run the tests in the respective Test classs with junit: Right-Click -> Run-as -> JUnit Test
+- EmployeeControllerTest: Contains tests methods to test EmployeeController endpoints
+- EmployeeServiceTest: Contains test methods to test EmployeeService methods and logics
 
