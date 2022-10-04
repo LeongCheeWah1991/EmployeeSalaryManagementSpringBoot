@@ -100,4 +100,5 @@ To access the H2 console:
   - JDBC URL: jdbc:h2:mem:salarymanagement
   - User Name: sa
   - Password: password
-
+3. Click "Connect"
+4. Click "EMPLOYEE" on the left, Click "RUN" to query the database
