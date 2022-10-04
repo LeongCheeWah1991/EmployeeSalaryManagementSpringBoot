@@ -89,3 +89,15 @@ Run the tests in the respective Test classs with junit: Right-Click -> Run-as ->
 - EmployeeControllerTest: Contains tests methods to test EmployeeController endpoints
 - EmployeeServiceTest: Contains test methods to test EmployeeService methods and logics
 
+---------------------------------------------------------------------------
+Accessing H2 in-memory
+---------------------------------------------------------------------------
+In application.properties, "spring.h2.console.enabled" is set to true, this enables toe H2 console.
+
+To access the H2 console:
+1. After starting up the Spring Boot application, access: http://localhost:8080/h2-console/login.jsp?
+2. Enter the following details as specified in application.properties:
+  - JDBC URL: jdbc:h2:mem:salarymanagement
+  - User Name: sa
+  - Password: password
+
