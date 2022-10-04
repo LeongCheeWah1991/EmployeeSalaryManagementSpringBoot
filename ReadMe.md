@@ -6,10 +6,10 @@ This is the Backend component for the assignment. For the Frontend component, pl
 https://github.com/LeongCheeWah1991/EmployeeSalaryManagementAngular
 
 This project (Employee Salary Management) is a Spring boot Application that consists of the following features:
-US1. Upload CSV records of Employees
-US2. Fetch list of Employees by muliple criteria
-US3. CUD operations related to Employees
-US4. Uploading CSV records single thread (No Concurrent Uploads)
+- US1. Upload CSV records of Employees
+- US2. Fetch list of Employees by muliple criteria
+- US3. CUD operations related to Employees
+- US4. Uploading CSV records single thread (No Concurrent Uploads)
 
 Spring Boot Version used: 2.7.4
 ---------------------------------------------------------------------------
