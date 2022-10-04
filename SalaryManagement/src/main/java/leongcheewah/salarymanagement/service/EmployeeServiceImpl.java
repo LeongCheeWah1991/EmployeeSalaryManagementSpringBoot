@@ -196,7 +196,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (limit == 0) {
 			limit = 30;
 		}
-
+		
 		// no sort specified, default to ascending, id
 		if (null == sort || sort.isEmpty()) {
 			sort = "+id";
@@ -233,7 +233,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 			}
 		}
 		Page<Employee> pageEmployees = null;
-
 		if (hasSearch) {
 			pageEmployees = employeeRepository.findEmployeesBySalaryBetween(minSalary, maxSalary,
 					PageRequest.of(0, Integer.MAX_VALUE, sortDirection, sortParameter));
@@ -246,7 +245,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (null != pageEmployees) {
 			List<Employee> employeeList = null;
 			if (pageEmployees.getNumberOfElements() > offset) {
-				if (pageEmployees.getNumberOfElements() < limit) {
+				if (pageEmployees.getNumberOfElements() < limit + offset) {
 					employeeList = pageEmployees.getContent().subList(offset, pageEmployees.getNumberOfElements());
 				} else {
 					employeeList = pageEmployees.getContent().subList(offset, limit + offset);
@@ -255,7 +254,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 			}
 		}
 		ResponseVO returnResponse = new ResponseVO(true, returnEmployeeList);
-
+		
 		return returnResponse;
 	}
 
@@ -312,6 +311,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 			employeeRepository.save(createEmployee);
 
 		} catch (Exception ex) {
+			ex.printStackTrace();
 			return new ResponseVO(false, ResponseMessageConstants.ERROR_CREATE);
 		}
 
