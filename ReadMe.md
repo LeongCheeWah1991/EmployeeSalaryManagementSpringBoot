@@ -57,9 +57,6 @@ Database Schema:
 - name 	- String, stores Employee Name
 - salary 	- double, stores Employee Salary
 
-employeeSchema.sql
-
-
 --------------------------------------------------------------------------
 Cloning down the repository and setting up project
 ---------------------------------------------------------------------------
@@ -73,7 +70,7 @@ e.g. Eclipse -> Import projects > Maven > Existing Maven Projects
 ---------------------------------------------------------------------------
 Running the application:
 ---------------------------------------------------------------------------
-- Using IDE (e.g. Eclipse)
+Using IDE (e.g. Eclipse)
 1. At Eclipse, locate the following class: SalaryManagementApplication.java, 
 2. Right-Click SalaryManagementApplication.java -> Run-as -> Java Application/ Spring boot App
 
@@ -99,8 +96,8 @@ In application.properties, "spring.h2.console.enabled" is set to true, this enab
 To access the H2 console:
 1. After starting up the Spring Boot application, access: http://localhost:8080/h2-console/login.jsp?
 2. Enter the following details as specified in application.properties:
-  - JDBC URL: jdbc:h2:mem:salarymanagement
-  - User Name: sa
-  - Password: password
+    - JDBC URL: jdbc:h2:mem:salarymanagement
+    - User Name: sa
+    - Password: password
 3. Click "Connect"
 4. Click "EMPLOYEE" on the left, Click "RUN" to query the database
